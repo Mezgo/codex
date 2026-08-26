@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0.0",
+  "kind": "ai-radar.daily-signals",
+  "generatedAt": "2026-07-31T16:49:55Z",
+  "query": {
+    "date": "2026-07-31",
+    "prompt": "Busca noticias de IA y guardalas",
+    "language": "es",
+    "topics": [
+      "artificial intelligence",
+      "AI regulation",
+      "frontier models",
+      "AI safety",
+      "copyright",
+      "developer tools"
+    ]
+  },
+  "signals": [
+    {
+      "id": "eu-ai-act-enforcement-team",
+      "title": "La UE activa enforcement del AI Act",
+      "source": {
+        "name": "AP News",
+        "url": "https://apnews.com/article/eu-ai-regulation-deepfakes-hacking-f4fcee1f9750e2b32cdf26ad73ee5ec2",
+        "publishedAt": "2026-07-31"
+      },
+      "evidence": "La Union Europea desplego un nuevo equipo en Bruselas para monitorear el cumplimiento del AI Act, incluyendo deepfakes, contenido ilicito, amenazas ciberneticas, etiquetado y posibles sanciones o bloqueo de acceso al mercado.",
+      "impact": {
+        "level": "high",
+        "summary": "Los productos de IA que operen en Europa necesitan tratar cumplimiento, trazabilidad y respuesta a reportes como requisitos de lanzamiento, no como trabajo posterior."
+      },
+      "action": "Revisar flujos de etiquetado, documentacion de modelos, monitoreo de abuso y procedimiento de respuesta antes de distribuir servicios de IA en la UE.",
+      "status": "active",
+      "tags": [
+        "regulation",
+        "europe",
+        "compliance"
+      ]
+    },
+    {
+      "id": "openai-gpt-5-6-general-availability",
+      "title": "OpenAI lanza GPT-5.6 en ChatGPT, Codex y API",
+      "source": {
+        "name": "OpenAI",
+        "url": "https://openai.com/index/gpt-5-6/",
+        "publishedAt": "2026-07-09"
+      },
+      "evidence": "OpenAI anuncio disponibilidad general de la familia GPT-5.6 con tres tiers, Sol, Terra y Luna, y acceso en ChatGPT, Codex y la API; el 30 de julio reporto reducciones de precio para Luna y Terra.",
+      "impact": {
+        "level": "high",
+        "summary": "La combinacion de modelos por tier, controles de esfuerzo, subagentes y cambios de precio puede alterar costos y arquitecturas de productos que dependen de LLMs."
+      },
+      "action": "Benchmarkear tareas propias contra Sol, Terra y Luna, separando latencia, costo total, calidad y riesgos operativos de agentes antes de migrar defaults.",
+      "status": "active",
+      "tags": [
+        "openai",
+        "models",
+        "api",
+        "coding-agents"
+      ]
+    },
+    {
+      "id": "anthropic-claude-opus-5-release",
+      "title": "Anthropic publica Claude Opus 5",
+      "source": {
+        "name": "Axios",
+        "url": "https://www.axios.com/2026/07/24/anthropic-releases-new-model-opus-5",
+        "publishedAt": "2026-07-24"
+      },
+      "evidence": "Axios reporto que Anthropic lanzo Claude Opus 5 como modelo cercano a Fable 5 en muchas tareas, con mitad de precio, uso empresarial y un control para ajustar esfuerzo de computo por tarea.",
+      "impact": {
+        "level": "medium-high",
+        "summary": "La competencia se mueve hacia segmentacion fina de capacidad, costo y velocidad; los equipos pueden reducir gasto si enrutan tareas por complejidad."
+      },
+      "action": "Crear una matriz de ruteo por tipo de tarea para decidir cuando usar modelos flagship, modelos balanceados o configuraciones de bajo esfuerzo.",
+      "status": "open-opportunity",
+      "tags": [
+        "anthropic",
+        "models",
+        "cost-optimization"
+      ]
+    },
+    {
+      "id": "ai-workers-frontier-pacing-letter",
+      "title": "Trabajadores de IA piden herramientas para pausar desarrollo de frontera",
+      "source": {
+        "name": "Business Insider",
+        "url": "https://www.businessinsider.com/ai-open-letter-automated-development-2026-7",
+        "publishedAt": "2026-07-28"
+      },
+      "evidence": "Business Insider reporto que mas de 1100 trabajadores de OpenAI, Anthropic, Google y Meta firmaron una carta que pide al gobierno de Estados Unidos apoyar herramientas tecnicas y de gobernanza para acompasar el desarrollo automatizado de IA.",
+      "impact": {
+        "level": "high",
+        "summary": "La gobernanza de modelos de frontera esta pasando de debate externo a demanda de empleados y lideres tecnicos dentro de los principales laboratorios."
+      },
+      "action": "Seguir propuestas de evaluacion previa, controles de despliegue y mecanismos de coordinacion porque pueden convertirse en requisitos para vendors y clientes enterprise.",
+      "status": "monitor",
+      "tags": [
+        "ai-safety",
+        "governance",
+        "frontier-models"
+      ]
+    },
+    {
+      "id": "google-gemini-publisher-copyright-lawsuit",
+      "title": "Publishers demandan a Google por entrenamiento de Gemini",
+      "source": {
+        "name": "TechCrunch",
+        "url": "https://techcrunch.com/2026/07/14/google-faces-another-ai-training-lawsuit-from-major-publishers/",
+        "publishedAt": "2026-07-14"
+      },
+      "evidence": "TechCrunch reporto que Hachette, Cengage, Elsevier, Scott Turow y otros demandaron a Google, alegando uso no autorizado de obras protegidas para entrenar Gemini y cambios a informacion de copyright.",
+      "impact": {
+        "level": "medium-high",
+        "summary": "El riesgo legal sobre datos de entrenamiento sigue activo, especialmente para datasets editoriales o historicamente licenciados para usos limitados."
+      },
+      "action": "Mantener inventario de procedencia, permisos y restricciones de datasets antes de entrenar, fine-tunear o usar contenido editorial en pipelines de IA.",
+      "status": "pending-litigation",
+      "tags": [
+        "copyright",
+        "google",
+        "training-data",
+        "legal"
+      ]
+    }
+  ]
+}
