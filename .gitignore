@@ -5,6 +5,9 @@ dist/
 coverage/
 .env
 .env.*
+!.env.example
+.supabase/
+supabase/.temp/
 .airadar/
 data/searches/
 data/reports/

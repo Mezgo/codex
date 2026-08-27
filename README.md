@@ -41,6 +41,16 @@ El starter contiene:
 
 La primera clase usa este estado para mostrar como `AGENTS.md` cambia la forma en que Codex entiende un proyecto antes de escribir codigo.
 
+## Estado Actual
+
+El repo ya conserva senales diarias como fixtures JSON y agrega una ruta server-side para persistirlas en Supabase cuando el proyecto y las variables de entorno esten configurados.
+
+- Contrato local: `schemas/ai-radar-daily-signals.schema.json`.
+- Fixtures: `data/fixtures/daily-signals/YYYY-MM-DD.json`.
+- API server-side: `api/daily-signals.js`.
+- Migracion Supabase: `supabase/migrations/0001_initial_ai_radar.sql`.
+- Guia de setup: `docs/supabase-persistence.md`.
+
 ## Stack Objetivo
 
 El stack debe mantenerse simple para que el foco del curso sea Codex, no el framework.
@@ -67,4 +77,3 @@ Antes de implementar, Codex debe distinguir:
 - limites de seguridad.
 
 Codex no debe inventar archivos, comandos, servicios ni integraciones como si ya existieran.
-

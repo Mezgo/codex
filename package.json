@@ -1,0 +1,17 @@
+{
+  "name": "ai-radar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Radar persistence and validation utilities.",
+  "scripts": {
+    "check:supabase": "node scripts/check-supabase-readiness.js",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "test:python": "python3 -m unittest discover -s tests",
+    "validate:daily": "node scripts/validate-daily-signal-schema.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.112.4",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}
