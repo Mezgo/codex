@@ -25,6 +25,7 @@
           <input
             id="search-input"
             name="search"
+            form="filters-form"
             type="search"
             placeholder="Buscar señales, temas o fuentes"
             autocomplete="off"
@@ -56,7 +57,7 @@
           </p>
         </div>
 
-        <form class="toolbar" aria-label="Filtros del ranking">
+        <form id="filters-form" class="toolbar" aria-label="Filtros del ranking">
           <div class="control-group">
             <label for="date-filter">Fecha</label>
             <select id="date-filter" name="date">

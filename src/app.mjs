@@ -40,7 +40,7 @@ const elements = {
   sortDirection: document.querySelector("#sort-direction"),
   sortKey: document.querySelector("#sort-key"),
   sourceFilter: document.querySelector("#source-filter"),
-  toolbar: document.querySelector(".toolbar")
+  toolbar: document.querySelector("#filters-form")
 };
 
 let visiblePage = { items: [], page: 1, total: 0, totalPages: 1 };
