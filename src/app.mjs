@@ -5,6 +5,7 @@ import { filterSignals } from "./domain/filter-signals.mjs";
 import { sortSignals } from "./domain/sort-signals.mjs";
 import { paginateSignals } from "./domain/paginate-signals.mjs";
 import { serializeVisibleSignals } from "./domain/export-signals.mjs";
+import { preventFormSubmit } from "./ui/prevent-form-submit.mjs";
 
 const DEFAULT_FILTERS = {
   query: "",
@@ -38,7 +39,8 @@ const elements = {
   searchInput: document.querySelector("#search-input"),
   sortDirection: document.querySelector("#sort-direction"),
   sortKey: document.querySelector("#sort-key"),
-  sourceFilter: document.querySelector("#source-filter")
+  sourceFilter: document.querySelector("#source-filter"),
+  toolbar: document.querySelector(".toolbar")
 };
 
 let visiblePage = { items: [], page: 1, total: 0, totalPages: 1 };
@@ -373,6 +375,7 @@ elements.modeOperator.addEventListener("click", () => {
 });
 
 elements.clearFilters.addEventListener("click", clearFilters);
+elements.toolbar.addEventListener("submit", preventFormSubmit);
 elements.exportButton.addEventListener("click", () => {
   exportVisibleSignals(visiblePage.items);
   elements.appStatus.textContent = `Exportación JSON preparada con ${visiblePage.items.length} señal${visiblePage.items.length === 1 ? "" : "es"} visibles.`;
