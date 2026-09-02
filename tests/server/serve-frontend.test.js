@@ -35,6 +35,12 @@ test("el servidor no expone archivos fuera de los recursos públicos", async () 
   assert.equal(response.status, 404);
 });
 
+test("el servidor no expone el código de servidor", async () => {
+  const response = await fetch(`${origin}/src/server/env.js`);
+
+  assert.equal(response.status, 404);
+});
+
 function reservePort() {
   return new Promise((resolve, reject) => {
     const server = net.createServer();

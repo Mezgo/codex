@@ -4,7 +4,9 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const port = Number(process.env.PORT || 4173);
-const publicRoots = [path.join(root, "src"), path.join(root, "data", "fixtures")];
+const frontendRoot = path.join(root, "src");
+const serverRoot = path.join(frontendRoot, "server");
+const fixturePath = path.join(root, "data", "fixtures", "daily-signals", "2026-08-04.json");
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -34,7 +36,9 @@ http.createServer(async (request, response) => {
 }).listen(port, "127.0.0.1", () => console.log(`AI Radar: http://127.0.0.1:${port}`));
 
 function isPublicFile(filePath) {
-  return publicRoots.some((publicRoot) => filePath.startsWith(`${publicRoot}${path.sep}`));
+  const isFrontendAsset = filePath.startsWith(`${frontendRoot}${path.sep}`);
+  const isServerCode = filePath.startsWith(`${serverRoot}${path.sep}`);
+  return (isFrontendAsset && !isServerCode) || filePath === fixturePath;
 }
 
 function end(response, status, message) {
