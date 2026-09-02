@@ -94,12 +94,12 @@
 
           <div class="toolbar-actions">
             <button id="clear-filters" class="button button-quiet" type="button">Limpiar filtros</button>
-            <button id="export-button" class="button button-primary" type="button">Exportar CSV</button>
+            <button id="export-button" class="button button-primary" type="button" disabled>Exportar JSON</button>
           </div>
         </form>
 
         <div class="results-header">
-          <p id="result-summary" aria-live="polite">Cargando señales para el ranking…</p>
+          <p id="result-summary" tabindex="-1" aria-live="polite">Cargando señales para el ranking…</p>
         </div>
 
         <section id="signals-container" class="signals-container" aria-label="Resultados del ranking" aria-busy="true">
