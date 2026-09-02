@@ -5,7 +5,9 @@
   "description": "AI Radar persistence and validation utilities.",
   "scripts": {
     "check:supabase": "node scripts/check-supabase-readiness.js",
+    "dev": "node scripts/serve-frontend.js",
     "test": "node --test \"tests/**/*.test.js\"",
+    "test:domain": "node --test \"tests/domain/*.test.mjs\"",
     "test:python": "python3 -m unittest discover -s tests",
     "validate:daily": "node scripts/validate-daily-signal-schema.js"
   },
