@@ -150,7 +150,7 @@ function signalDetailsMarkup(signal) {
 
 function renderSignals(items, page) {
   const rows = items.map((signal, index) => `
-    <tr>
+    <tr data-signal-id="${escapeHtml(signal.id)}">
       <td class="signal-rank">${escapeHtml((page.page - 1) * state.pageSize + index + 1)}</td>
       <td>${signalDetailsMarkup(signal)}</td>
       <td>
@@ -163,7 +163,7 @@ function renderSignals(items, page) {
     </tr>
   `).join("");
   const cards = items.map((signal, index) => `
-    <article class="signal-card" role="listitem">
+    <article class="signal-card" role="listitem" data-signal-id="${escapeHtml(signal.id)}">
       <div class="signal-card-header">
         <span class="signal-rank">#${escapeHtml((page.page - 1) * state.pageSize + index + 1)}</span>
         <span class="score ${scoreClass(signal.compositeScore)}">${escapeHtml(signal.compositeScore)} · derivada en esta interfaz</span>
@@ -213,7 +213,7 @@ function renderError() {
   elements.container.setAttribute("aria-busy", "false");
   elements.container.innerHTML = `
     <div class="state-message" role="alert">
-      <p><strong>No se pudieron cargar las señales.</strong></p>
+      <p><strong>No pudimos cargar las señales.</strong></p>
       <p>${escapeHtml(state.error?.message || "Error desconocido")}</p>
       <button class="button button-primary" type="button" data-action="retry">Reintentar</button>
     </div>
@@ -226,7 +226,7 @@ function renderError() {
 function renderEmpty() {
   elements.container.innerHTML = `
     <div class="state-message" role="status">
-      <p><strong>No hay señales con estos filtros.</strong></p>
+      <p><strong>No encontramos señales.</strong></p>
       <p>Prueba otra búsqueda o restablece los filtros.</p>
       <button class="button button-quiet" type="button" data-action="clear">Limpiar filtros</button>
     </div>
