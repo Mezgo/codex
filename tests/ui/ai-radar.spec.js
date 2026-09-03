@@ -1,11 +1,8 @@
 const { test, expect } = require("@playwright/test");
-const fs = require("node:fs");
-const path = require("node:path");
+const { prepareSnapshot } = require("./snapshot-artifacts.js");
 
 const APP_ORIGIN = "http://127.0.0.1:4173";
 const FIXTURE_PATH = "/data/fixtures/daily-signals/2026-08-04.json";
-
-test.beforeAll(() => fs.mkdirSync("snapshots", { recursive: true }));
 
 function observeBrowser(page, { allowMissingFixture = false } = {}) {
   const consoleMessages = [];
@@ -71,10 +68,8 @@ test("carga el fixture declarado, busca y conserva navegador limpio", async ({ p
   await expectNoHorizontalOverflow(page);
   expectCleanBrowser(observations);
 
-  const name = testInfo.project.name === "mobile"
-    ? "ai-radar-mobile-success.png"
-    : "ai-radar-desktop-success.png";
-  await page.screenshot({ path: path.join("snapshots", name), fullPage: true });
+  const snapshotPath = prepareSnapshot({ projectName: testInfo.project.name, state: "success" });
+  await page.screenshot({ path: snapshotPath, fullPage: true });
 });
 
 test("combina filtros de fuente y fecha", async ({ page }) => {
@@ -113,7 +108,8 @@ test("muestra error accesible y permite reintentar", async ({ page }, testInfo) 
   await expect(page.getByRole("alert")).toContainText("No pudimos cargar las señales");
   await expectNoHorizontalOverflow(page);
   expectCleanBrowser(observations);
-  await page.screenshot({ path: path.join("snapshots", "ai-radar-desktop-error.png"), fullPage: true });
+  const snapshotPath = prepareSnapshot({ projectName: testInfo.project.name, state: "error" });
+  await page.screenshot({ path: snapshotPath, fullPage: true });
 });
 
 test("Enter en búsqueda filtra sin recargar ni cambiar la URL", async ({ page }) => {
@@ -137,6 +133,9 @@ test("los controles principales reciben foco visible por teclado", async ({ page
   await page.goto("/");
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Saltar al contenido" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "AI Radar, inicio" })).toBeFocused();
+  await expect(page.getByRole("link", { name: "AI Radar, inicio" })).toHaveCSS("outline-style", "solid");
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Buscar señales")).toBeFocused();
   await expect(page.getByLabel("Buscar señales")).toHaveCSS("outline-style", "solid");
