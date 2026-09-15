@@ -10,7 +10,7 @@ import { bindFilterFormSubmit } from "./ui/prevent-form-submit.mjs";
 const DEFAULT_FILTERS = {
   query: "",
   source: "all",
-  days: "7",
+  days: "all",
   sortKey: "composite",
   direction: "desc",
   page: 1
@@ -64,15 +64,24 @@ function safeExternalUrl(value) {
 }
 
 function scoreClass(score) {
+  if (!Number.isFinite(score)) return "is-muted";
   if (score >= 75) return "";
   if (score >= 55) return "is-amber";
   return "is-muted";
 }
 
-function statusClass(label) {
-  if (label === "Señal fuerte") return "is-strong";
-  if (label === "En revisión" || label === "Datos parciales") return "is-review";
-  return "is-error";
+function displayScore(score) {
+  return Number.isFinite(score) ? score : "Sin dato";
+}
+
+function scoreDataValue(score) {
+  return Number.isFinite(score) ? score : "missing";
+}
+
+function statusClass(status) {
+  if (status === "active") return "is-strong";
+  if (["investigating", "monitor", "open-opportunity"].includes(status)) return "is-review";
+  return "is-muted";
 }
 
 function trendLabel(trend) {
@@ -83,7 +92,10 @@ function trendLabel(trend) {
 }
 
 function trendMarkup(signal) {
-  const trend = Array.isArray(signal.trend) && signal.trend.length > 1 ? signal.trend : [50, 50];
+  if (!Array.isArray(signal.trend) || signal.trend.length < 2) {
+    return '<span class="trend-label">Tendencia: Sin dato</span>';
+  }
+  const trend = signal.trend;
   const width = 100;
   const height = 36;
   const points = trend.map((value, index) => {
@@ -125,53 +137,95 @@ function scoresMarkup(signal) {
       ${Object.entries(labels).map(([key, label]) => `
         <div>
           <dt>${label}</dt>
-          <dd class="${scoreClass(signal.scores[key])}">${escapeHtml(signal.scores[key])}</dd>
+          <dd class="${scoreClass(signal.scores[key])}">${escapeHtml(displayScore(signal.scores[key]))}</dd>
         </div>
       `).join("")}
     </dl>
   `;
 }
 
+function modeContentMarkup(signal) {
+  return `
+    <div class="reader-context" data-mode-content="reader">
+      <dl class="context-list">
+        <div>
+          <dt>Evidencia</dt>
+          <dd>${escapeHtml(signal.evidence)}</dd>
+        </div>
+        <div>
+          <dt>Impacto</dt>
+          <dd>${escapeHtml(signal.impactSummary)}</dd>
+        </div>
+      </dl>
+      <p class="reader-action"><strong>Acción sugerida</strong> ${escapeHtml(signal.action)}</p>
+    </div>
+    <p class="operator-action" data-mode-content="operator"><strong>Acción:</strong> ${escapeHtml(signal.action)}</p>
+  `;
+}
+
+function statusMarkup(signal) {
+  return `
+    <div class="signal-status">
+      <span class="status-badge ${statusClass(signal.status)}">${escapeHtml(signal.statusLabel)}</span>
+      <span class="status-detail">Validación: ${escapeHtml(signal.validationLabel)}</span>
+      <span class="status-detail">Hype: ${escapeHtml(signal.hypeRecommendationLabel)}</span>
+    </div>
+  `;
+}
+
+function scoreDataAttributes(signal) {
+  return [
+    ["composite", signal.compositeScore],
+    ["novelty", signal.scores.novelty],
+    ["impact", signal.scores.impact],
+    ["evidence", signal.scores.evidence],
+    ["actionability", signal.scores.actionability]
+  ].map(([key, value]) => `data-score-${key}="${scoreDataValue(value)}"`).join(" ");
+}
+
 function signalDetailsMarkup(signal) {
   const duplicate = signal.duplicateCount > 0
-    ? `<span>${escapeHtml(signal.duplicateCount)} coincidencia(s)</span>`
+    ? `<span>${escapeHtml(signal.duplicateCount)} ${signal.duplicateCount === 1 ? "coincidencia" : "coincidencias"}</span>`
     : "";
   return `
-    <h2 class="signal-title">${escapeHtml(signal.title)}</h2>
-    <div class="signal-meta">
-      <span>${escapeHtml(signal.type)}</span>
-      ${sourceMarkup(signal)}
-      <time datetime="${escapeHtml(signal.publishedAt)}">${escapeHtml(signal.publishedAt)}</time>
-      ${duplicate}
+    <div class="signal-details">
+      <h2 class="signal-title">${escapeHtml(signal.title)}</h2>
+      <div class="signal-meta">
+        <span>${escapeHtml(signal.type)}</span>
+        ${sourceMarkup(signal)}
+        <time datetime="${escapeHtml(signal.publishedAt)}">${escapeHtml(signal.publishedAt)}</time>
+        ${duplicate}
+      </div>
+      <div class="signal-tags" aria-label="Etiquetas">${tagsMarkup(signal.tags)}</div>
+      ${modeContentMarkup(signal)}
     </div>
-    <div class="signal-tags" aria-label="Etiquetas">${tagsMarkup(signal.tags)}</div>
   `;
 }
 
 function renderSignals(items, page) {
   const rows = items.map((signal, index) => `
-    <tr data-signal-id="${escapeHtml(signal.id)}">
+    <tr data-signal-id="${escapeHtml(signal.id)}" ${scoreDataAttributes(signal)}>
       <td class="signal-rank">${escapeHtml((page.page - 1) * state.pageSize + index + 1)}</td>
-      <td>${signalDetailsMarkup(signal)}</td>
-      <td>
-        <strong class="score ${scoreClass(signal.compositeScore)}">${escapeHtml(signal.compositeScore)}</strong>
+      <td class="signal-content-cell">${signalDetailsMarkup(signal)}</td>
+      <td class="signal-score-cell">
+        <strong class="score ${scoreClass(signal.compositeScore)}">${escapeHtml(displayScore(signal.compositeScore))}</strong>
         <span class="derived-note">Derivada en esta interfaz</span>
       </td>
-      <td>${scoresMarkup(signal)}</td>
-      <td>${trendMarkup(signal)}</td>
-      <td><span class="status-badge ${statusClass(signal.statusLabel)}">${escapeHtml(signal.statusLabel)}</span></td>
+      <td class="signal-dimensions-cell">${scoresMarkup(signal)}</td>
+      <td class="signal-trend-cell">${trendMarkup(signal)}</td>
+      <td class="signal-status-cell">${statusMarkup(signal)}</td>
     </tr>
   `).join("");
   const cards = items.map((signal, index) => `
-    <article class="signal-card" role="listitem" data-signal-id="${escapeHtml(signal.id)}">
+    <article class="signal-card" role="listitem" data-signal-id="${escapeHtml(signal.id)}" ${scoreDataAttributes(signal)}>
       <div class="signal-card-header">
         <span class="signal-rank">#${escapeHtml((page.page - 1) * state.pageSize + index + 1)}</span>
-        <span class="score ${scoreClass(signal.compositeScore)}">${escapeHtml(signal.compositeScore)} · derivada en esta interfaz</span>
+        <span class="score ${scoreClass(signal.compositeScore)}">${escapeHtml(displayScore(signal.compositeScore))} · derivada en esta interfaz</span>
       </div>
       ${signalDetailsMarkup(signal)}
       ${scoresMarkup(signal)}
       <div class="signal-card-footer">
-        <span class="status-badge ${statusClass(signal.statusLabel)}">${escapeHtml(signal.statusLabel)}</span>
+        ${statusMarkup(signal)}
         <span class="trend">${trendMarkup(signal)}</span>
       </div>
     </article>
@@ -244,6 +298,7 @@ function renderPagination(page) {
 
 function renderMode() {
   document.documentElement.dataset.mode = state.mode;
+  elements.container.dataset.mode = state.mode;
   const isReader = state.mode === "reader";
   elements.modeReader.setAttribute("aria-pressed", String(isReader));
   elements.modeOperator.setAttribute("aria-pressed", String(!isReader));
@@ -319,6 +374,10 @@ function clearFilters() {
   render();
 }
 
+function focusResultSummary() {
+  elements.resultSummary.focus({ preventScroll: true });
+}
+
 export function exportVisibleSignals(items) {
   const blob = new Blob([serializeVisibleSignals(items)], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -389,10 +448,16 @@ elements.pagination.addEventListener("click", (event) => {
   elements.resultSummary.focus({ preventScroll: true });
 });
 
-elements.container.addEventListener("click", (event) => {
+elements.container.addEventListener("click", async (event) => {
   const action = event.target.closest("button[data-action]")?.dataset.action;
-  if (action === "clear") clearFilters();
-  if (action === "retry") start();
+  if (action === "clear") {
+    clearFilters();
+    focusResultSummary();
+  }
+  if (action === "retry") {
+    await start();
+    focusResultSummary();
+  }
 });
 
 syncControls();

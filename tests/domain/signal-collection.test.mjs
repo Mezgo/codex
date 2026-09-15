@@ -19,6 +19,17 @@ test("sortSignals mantiene estable el orden cuando empatan", () => {
   assert.deepEqual(sortSignals(tied, "composite", "desc").map(({ id }) => id), ["a", "b", "c"]);
 });
 
+test("sortSignals mantiene puntuaciones ausentes al final en ambas direcciones", () => {
+  const withMissing = [
+    { id: "missing", compositeScore: null, scores: { evidence: null } },
+    { id: "high", compositeScore: 90, scores: { evidence: 90 } },
+    { id: "low", compositeScore: 40, scores: { evidence: 40 } }
+  ];
+
+  assert.deepEqual(sortSignals(withMissing, "composite", "desc").map(({ id }) => id), ["high", "low", "missing"]);
+  assert.deepEqual(sortSignals(withMissing, "evidence", "asc").map(({ id }) => id), ["low", "high", "missing"]);
+});
+
 test("paginateSignals limita página fuera de rango", () => {
   const result = paginateSignals(signals, 9, 2);
   assert.equal(result.page, 2);
