@@ -21,3 +21,5 @@ recordings/
 *.db
 *.pem
 *.key
+visual-reference/
+test-results/
