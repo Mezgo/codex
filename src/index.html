@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07111d">
+    <title>AI Radar · Ranking de señales</title>
+    <link rel="stylesheet" href="/src/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+    <header class="site-header">
+      <div class="shell header-top">
+        <a class="brand" href="/" aria-label="AI Radar, inicio">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span>AI <strong>Radar</strong></span>
+        </a>
+        <p class="demo-notice">Demo local · fixture 2026-08-04</p>
+      </div>
+
+      <div class="shell header-controls">
+        <div class="search-field">
+          <label for="search-input">Buscar señales</label>
+          <input
+            id="search-input"
+            name="search"
+            form="filters-form"
+            type="search"
+            placeholder="Buscar señales, temas o fuentes"
+            autocomplete="off"
+            aria-describedby="search-hint"
+          >
+          <span id="search-hint" class="field-hint">Escribe para filtrar el ranking.</span>
+        </div>
+
+        <div class="mode-switch" role="group" aria-label="Modo de visualización">
+          <button id="mode-reader" class="mode-button is-selected" type="button" aria-pressed="true">
+            Modo lector
+          </button>
+          <button id="mode-operator" class="mode-button" type="button" aria-pressed="false">
+            Modo operador
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="shell main-content" tabindex="-1">
+      <section class="ranking" aria-labelledby="ranking-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Exploración local</p>
+            <h1 id="ranking-title">Ranking de señales</h1>
+          </div>
+          <p id="app-status" class="app-status" aria-live="polite" aria-atomic="true">
+            Preparando señales del fixture local.
+          </p>
+        </div>
+
+        <form id="filters-form" class="toolbar" aria-label="Filtros del ranking">
+          <div class="control-group">
+            <label for="date-filter">Fecha</label>
+            <select id="date-filter" name="date">
+              <option value="all">Todas las fechas</option>
+              <option value="7">Últimos 7 días</option>
+              <option value="30">Últimos 30 días</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="source-filter">Fuente</label>
+            <select id="source-filter" name="source">
+              <option value="all">Todas las fuentes</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="sort-key">Ordenar por</label>
+            <select id="sort-key" name="sort-key">
+              <option value="composite">Puntuación compuesta</option>
+              <option value="novelty">Novedad</option>
+              <option value="impact">Impacto</option>
+              <option value="evidence">Evidencia</option>
+              <option value="actionability">Accionabilidad</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="sort-direction">Dirección</label>
+            <select id="sort-direction" name="sort-direction">
+              <option value="desc">Descendente</option>
+              <option value="asc">Ascendente</option>
+            </select>
+          </div>
+
+          <div class="toolbar-actions">
+            <button id="clear-filters" class="button button-quiet" type="button">Limpiar filtros</button>
+            <button id="export-button" class="button button-primary" type="button" disabled>Exportar JSON</button>
+          </div>
+        </form>
+
+        <div class="results-header">
+          <p id="result-summary" tabindex="-1" aria-live="polite">Cargando señales para el ranking…</p>
+        </div>
+
+        <section id="signals-container" class="signals-container" aria-label="Resultados del ranking" aria-busy="true">
+          <div class="state-message" role="status">
+            <span class="loading-dot" aria-hidden="true"></span>
+            <p>Cargando señales locales…</p>
+          </div>
+        </section>
+
+        <nav id="pagination" class="pagination" aria-label="Paginación de señales">
+          <button class="pagination-button" type="button" disabled aria-label="Página anterior">Anterior</button>
+          <span class="pagination-status">La paginación estará disponible al cargar resultados.</span>
+          <button class="pagination-button" type="button" disabled aria-label="Página siguiente">Siguiente</button>
+        </nav>
+      </section>
+    </main>
+
+    <script type="module" src="/src/app.mjs"></script>
+  </body>
+</html>

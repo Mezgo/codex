@@ -5,13 +5,21 @@
   "description": "AI Radar persistence and validation utilities.",
   "scripts": {
     "check:supabase": "node scripts/check-supabase-readiness.js",
+    "dev": "node scripts/serve-frontend.js",
     "test": "node --test \"tests/**/*.test.js\"",
+    "test:all": "npm test && npm run test:python && npm run test:domain && npm run test:ui-unit && npm run test:ui",
+    "test:domain": "node --test \"tests/domain/*.test.mjs\"",
     "test:python": "python3 -m unittest discover -s tests",
+    "test:ui": "playwright test",
+    "test:ui-unit": "node --test \"tests/ui/*.test.mjs\"",
     "validate:daily": "node scripts/validate-daily-signal-schema.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.112.4",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
   }
 }
