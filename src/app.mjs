@@ -2,6 +2,7 @@ import { loadSignals, FIXTURE_URL } from "./data/load-signals.mjs";
 import { selectFixtureUrl } from "./data/select-fixture.mjs";
 import { normalizeSignals } from "./domain/normalize-signal.mjs";
 import { filterSignals } from "./domain/filter-signals.mjs";
+import { sourceCategoryLabel } from "./domain/source-category.mjs";
 import { sortSignals } from "./domain/sort-signals.mjs";
 import { paginateSignals } from "./domain/paginate-signals.mjs";
 import { serializeVisibleSignals } from "./domain/export-signals.mjs";
@@ -9,7 +10,7 @@ import { bindFilterFormSubmit } from "./ui/prevent-form-submit.mjs";
 
 const DEFAULT_FILTERS = {
   query: "",
-  source: "all",
+  sourceCategory: "all",
   days: "all",
   sortKey: "composite",
   direction: "desc",
@@ -331,12 +332,13 @@ function render() {
 }
 
 function populateSources() {
-  const previous = state.source;
-  elements.sourceFilter.replaceChildren(new Option("Todas las fuentes", "all"));
-  const sources = [...new Set(state.signals.map(({ sourceName }) => sourceName))].sort((left, right) => left.localeCompare(right, "es"));
-  for (const source of sources) elements.sourceFilter.add(new Option(source, source));
+  const previous = state.sourceCategory;
+  elements.sourceFilter.replaceChildren(new Option("Todas las categorías", "all"));
+  const sources = [...new Set(state.signals.map(({ sourceCategory }) => sourceCategory))]
+    .sort((left, right) => sourceCategoryLabel(left).localeCompare(sourceCategoryLabel(right), "es"));
+  for (const source of sources) elements.sourceFilter.add(new Option(sourceCategoryLabel(source), source));
   elements.sourceFilter.value = sources.includes(previous) ? previous : "all";
-  state.source = elements.sourceFilter.value;
+  state.sourceCategory = elements.sourceFilter.value;
 }
 
 async function start() {
@@ -362,7 +364,7 @@ async function start() {
 
 function syncControls() {
   elements.searchInput.value = state.query;
-  elements.sourceFilter.value = state.source;
+  elements.sourceFilter.value = state.sourceCategory;
   elements.dateFilter.value = state.days;
   elements.sortKey.value = state.sortKey;
   elements.sortDirection.value = state.direction;
@@ -406,7 +408,7 @@ elements.dateFilter.addEventListener("change", (event) => {
 });
 
 elements.sourceFilter.addEventListener("change", (event) => {
-  state.source = event.currentTarget.value;
+  state.sourceCategory = event.currentTarget.value;
   state.page = 1;
   render();
 });
@@ -457,6 +459,19 @@ elements.container.addEventListener("click", async (event) => {
   if (action === "retry") {
     await start();
     focusResultSummary();
+  }
+});
+
+const filtersToggle = document.querySelector("#filters-toggle");
+filtersToggle.addEventListener("click", () => {
+  const expanded = filtersToggle.getAttribute("aria-expanded") === "true";
+  filtersToggle.setAttribute("aria-expanded", String(!expanded));
+});
+
+elements.toolbar.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && window.matchMedia("(max-width: 760px)").matches) {
+    filtersToggle.setAttribute("aria-expanded", "false");
+    filtersToggle.focus();
   }
 });
 

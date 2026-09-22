@@ -1,3 +1,5 @@
+import { sourceCategory } from "./source-category.mjs";
+
 const impactScores = { high: 90, "medium-high": 78, medium: 65, low: 40 };
 const evidenceScores = { passed: 100, warning: 60, failed: 20 };
 const actionabilityScores = { "probar ahora": 92, vigilar: 68, "ignorar por ahora": 25, descartar: 20 };
@@ -42,6 +44,7 @@ export function normalizeSignal(signal, index = 0) {
     id: signal?.id || `signal-${index + 1}`,
     title: signal?.title || "Sin título",
     sourceName: signal?.source?.name || "Sin dato",
+    sourceCategory: sourceCategory(signal?.sourceProfile?.type),
     sourceUrl: signal?.source?.url || "",
     publishedAt: signal?.source?.publishedAt || "Sin dato",
     type: signal?.sourceProfile?.type || "Sin dato",

@@ -57,6 +57,9 @@
           </p>
         </div>
 
+        <button id="filters-toggle" class="button filters-toggle" type="button" aria-expanded="false" aria-controls="filters-form">
+          <span aria-hidden="true">☰</span> Filtros
+        </button>
         <form id="filters-form" class="toolbar" aria-label="Filtros del ranking">
           <div class="control-group">
             <label for="date-filter">Fecha</label>
@@ -68,9 +71,9 @@
           </div>
 
           <div class="control-group">
-            <label for="source-filter">Fuente</label>
-            <select id="source-filter" name="source">
-              <option value="all">Todas las fuentes</option>
+            <label for="source-filter">Categoría de fuente</label>
+            <select id="source-filter" name="source-category">
+              <option value="all">Todas las categorías</option>
             </select>
           </div>
 

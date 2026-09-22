@@ -5,6 +5,46 @@ const { prepareSnapshot } = require("./snapshot-artifacts.js");
 const APP_ORIGIN = "http://127.0.0.1:4173";
 const FIXTURE_PATH = "/data/fixtures/daily-signals/2026-08-04.json";
 
+// Existing interaction tests exercise controls inside the mobile disclosure.
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.project.name !== "mobile" || testInfo.title.includes("menú responsive")) return;
+  await page.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector("#filters-toggle")?.click();
+    });
+  });
+});
+
+test("menú responsive inicia cerrado y conserva filtros al alternar", async ({ page }, testInfo) => {
+  const observations = observeBrowser(page);
+  await page.setViewportSize({ width: 725, height: 788 });
+  await page.goto("/");
+  const button = page.locator("#filters-toggle");
+  const form = page.getByRole("form", { name: "Filtros del ranking" });
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  await expect(form).toBeHidden();
+  await button.focus();
+  await page.keyboard.press("Enter");
+  await expect(form).toBeVisible();
+  await page.getByLabel("Categoría de fuente").selectOption("official");
+  const ids = await visibleSignalIds(page);
+  await page.getByLabel("Categoría de fuente").press("Escape");
+  await expect(form).toBeHidden();
+  await expect(button).toBeFocused();
+  expect(await visibleSignalIds(page)).toEqual(ids);
+  await page.keyboard.press("Space");
+  await expect(page.getByLabel("Categoría de fuente")).toHaveValue("official");
+  await button.click();
+  await page.screenshot({ path: `snapshots/filters-collapsed-${testInfo.project.name}.png` });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(button).toBeHidden();
+  await expect(form).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(form).toBeHidden();
+  await expectNoHorizontalOverflow(page);
+  expectCleanBrowser(observations);
+});
+
 function observeBrowser(page, { allowMissingFixture = false } = {}) {
   const consoleMessages = [];
   const pageErrors = [];
@@ -166,16 +206,35 @@ test("exporta la página visible y navega realmente a la siguiente", async ({ pa
   expect(secondPageIds.some((id) => firstPageIds.includes(id))).toBe(false);
 });
 
-test("combina filtros de fuente y fecha", async ({ page }) => {
+test("combina categoría, búsqueda y fecha y restablece filtros", async ({ page }, testInfo) => {
+  const observations = observeBrowser(page);
+  const fixture = JSON.parse(fs.readFileSync(`.${FIXTURE_PATH}`, "utf8"));
   await page.goto("/");
   await expect(page.locator("[data-signal-id]:visible").first()).toBeVisible();
-
+  await page.getByRole("button", { name: "Página siguiente" }).click();
+  const category = page.getByLabel("Categoría de fuente");
+  await category.selectOption("official");
+  const officialIds = fixture.signals.filter((signal) => signal.sourceProfile.type === "official").map(({ id }) => id);
+  await expect(page.locator("#result-summary")).toContainText(`${officialIds.length} señales`);
+  expect((await visibleSignalIds(page)).every((id) => officialIds.includes(id))).toBe(true);
+  await expect(page.locator(".pagination-status")).toContainText("Página 1 de");
+  await expect(category.locator("option")).not.toContainText(["Comision Europea"]);
+  await category.selectOption("mixed");
+  await page.getByLabel("Buscar señales").fill("Comision Europea");
   await page.getByLabel("Fecha").selectOption("7");
-  await page.getByLabel("Fuente").selectOption({ label: "Comision Europea" });
   await expect(page.getByText("No encontramos señales")).toBeVisible();
   await page.getByLabel("Fecha").selectOption("all");
   await expect(page.locator("[data-signal-id]:visible", { hasText: "La Comision Europea publica guias de transparencia del AI Act" })).toHaveCount(1);
   await expect(page.locator("[data-signal-id]")).toHaveCount(2);
+  await category.focus();
+  await expect(category).toHaveCSS("outline-style", "solid");
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: `snapshots/source-category-${testInfo.project.name}.png`, fullPage: false });
+  await page.getByRole("button", { name: "Limpiar filtros" }).click();
+  await expect(category).toHaveValue("all");
+  await expect(page.getByLabel("Buscar señales")).toHaveValue("");
+  await expect(page.locator("#result-summary")).toContainText(`${fixture.signals.length} señales`);
+  expectCleanBrowser(observations);
 });
 
 test("muestra vacío y permite limpiar filtros", async ({ page }) => {
